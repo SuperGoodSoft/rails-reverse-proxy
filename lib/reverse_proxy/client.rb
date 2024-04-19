@@ -63,6 +63,11 @@ module ReverseProxy
       # Define headers
       target_request_headers = extract_http_request_headers(source_request.env).merge(options[:headers])
 
+      # Allow users to define headers dynamically
+      if options[:header_transform]
+        target_request_headers = options[:header_transform].call(target_request_headers)
+      end
+
       # Initialize request
       target_request = Net::HTTP.const_get(source_request.request_method.capitalize).new(uri.request_uri, target_request_headers)
 
